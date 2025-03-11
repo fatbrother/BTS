@@ -1,13 +1,23 @@
-# Sample Hardhat Project
+# BlockChain Ticketing System
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+This is a simple ticketing system that uses the blockchain to store tickets and their information. The system is built using the Hardhat framework and Solidity.
 
-Try running some of the following tasks:
+## Installation
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
+To install the project, clone the repository and run the following commands:
+
+```bash
+npm install
 ```
+
+## Running the tests
+
+To run the tests, run the following command:
+
+```bash
+npx hardhat test
+```
+
+## LICENSE
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
