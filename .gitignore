@@ -2,6 +2,8 @@ node_modules
 .env
 .venv
 *.log
+*.db
+.vscode
 
 # Hardhat files
 /cache
@@ -17,3 +19,8 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+
+
+# python files
+__pycache__
+.pytest_cache
