@@ -10,13 +10,33 @@ To install the project, clone the repository and run the following commands:
 npm install
 ```
 
-## Running the tests
-
-To run the tests, run the following command:
+## Generating the contract ABI
+To generate the contract ABI, use the following command:
 
 ```bash
-npx hardhat test
+npx hardhat compile
 ```
+
+## Running the test network
+
+To run the test network, use the following command:
+
+```bash
+npx hardhat node
+```
+
+Deploy the contract to the local network using:
+
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+Run flask server using:
+
+```bash
+flask run
+```
+
 
 ## LICENSE
 
