@@ -17,7 +17,7 @@ jwt = JWTManager(app)
 w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
 # Load contract ABI and bytecode
 def load_contract_interface():
-    with open('build/ConcertTickets.json') as f:
+    with open('artifacts/contracts/ConcertTickets.sol/ConcertTickets.json') as f:
         contract_json = json.load(f)
         return contract_json['abi'], contract_json['bytecode']
 
@@ -43,7 +43,7 @@ class Event(db.Model):
 def create_tables():
     db.create_all()
 
-@app.before_first_request
+@app.before_request
 def initialize():
     create_tables()
 
