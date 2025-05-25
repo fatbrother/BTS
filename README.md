@@ -46,6 +46,12 @@ export FLASK_APP=app.py
 flask run
 ```
 
+Creat event
+
+```bash
+python scripts/create_event.py
+```
+
 ## LICENSE
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
