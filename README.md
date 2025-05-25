@@ -35,7 +35,7 @@ npx hardhat run scripts/deployNFT.js --network localhost
 npx hardhat run scripts/deploy.js --network localhost
 ```
 
-Run flask server using:
+## Run flask server
 
 ```bash
 # Windows
@@ -46,7 +46,9 @@ export FLASK_APP=app.py
 flask run
 ```
 
-Creat event
+## Creat event
+
+Make sure you login already
 
 ```bash
 python scripts/create_event.py
