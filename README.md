@@ -9,7 +9,6 @@ To install the project, clone the repository and run the following commands:
 ```bash
 npm install
 pip install -r requirements.txt
-pip install flask_sqlalchemy
 ```
 
 ## Generating the contract ABI
@@ -32,6 +31,7 @@ Deploy the contract to the local network using:
 use another terminal
 
 ```bash
+npx hardhat run scripts/deployNFT.js --network localhost
 npx hardhat run scripts/deploy.js --network localhost
 ```
 
