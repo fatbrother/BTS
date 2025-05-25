@@ -1,34 +1,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
+import "./ConcertTicketNFT.sol";
+
 contract ConcertTickets {
     string public eventName;
     address public issuer;
+    uint256 public eventId;
     uint256 public totalTickets;
     uint256 public reservationStart;
     uint256 public reservationEnd;
     address[] public reservations;
     address[] public whitelists;
-    mapping(address => uint256) public winners;
+    mapping(address => bool) public winners;
     mapping(uint256 => address) public ticketOwners;
+    ConcertTicketNFT public nftContract;
 
     constructor(
         string memory _eventName,
         uint256 _totalTickets,
         uint256 _reservationStart,
         uint256 _reservationEnd,
-        address[] memory _whitelists
+        address[] memory _whitelists,
+        address _nftContract
     ) {
         require(_totalTickets > 0, "Total tickets must be greater than zero");
         require(_reservationStart < _reservationEnd, "Invalid time range");
         require(totalTickets == 0, "Event details already set");
 
+        eventId = uint256(keccak256(abi.encodePacked(_eventName, block.timestamp)));
         eventName = _eventName;
         issuer = msg.sender;
         totalTickets = _totalTickets;
         reservationStart = _reservationStart;
         reservationEnd = _reservationEnd;
         whitelists = _whitelists;
+        nftContract = ConcertTicketNFT(_nftContract);
     }
 
     modifier onlyIssuer() {
@@ -79,7 +86,7 @@ contract ConcertTickets {
         if (totalTickets >= reservations.length) {
             for (uint256 i = 0; i < reservations.length; i++) {
                 address winnerAddress = reservations[i];
-                winners[winnerAddress] = i + 1;
+                winners[winnerAddress] = true;
                 ticketOwners[i + 1] = winnerAddress;
             }
         } else {
@@ -97,9 +104,15 @@ contract ConcertTickets {
 
             for (uint256 i = 0; i < numWinners; i++) {
                 address winnerAddress = reservations[indices[i]];
-                winners[winnerAddress] = i + 1;
+                winners[winnerAddress] = true;
                 ticketOwners[i + 1] = winnerAddress;
             }
         }
+    }
+
+    function mintTicket() external {
+        require(winners[msg.sender], "Not a winner");
+        winners[msg.sender] = false;
+        nftContract.mint(msg.sender, eventId);
     }
 }
