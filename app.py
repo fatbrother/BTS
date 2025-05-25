@@ -49,6 +49,11 @@ def create_tables():
 def initialize():
     create_tables()
 
+# test api is alive
+@app.route('/hello', methods=['GET'])
+def hello():
+    return 'hello world', 200
+
 # User registration and login
 @app.route('/register', methods=['POST'])
 def register():
