@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -6,6 +7,7 @@ from web3 import Web3
 import json
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'highly_secret_key'
@@ -46,6 +48,11 @@ def create_tables():
 @app.before_request
 def initialize():
     create_tables()
+
+# test api is alive
+@app.route('/hello', methods=['GET'])
+def hello():
+    return 'hello world', 200
 
 # User registration and login
 @app.route('/register', methods=['POST'])
