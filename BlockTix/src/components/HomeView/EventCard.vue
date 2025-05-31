@@ -1,11 +1,11 @@
 <template>
 	<div class="event-card" @click="viewEvent">
-		<img :src="image" alt="Event Image" v-if="image" />
+		<img :src="event.image_url" alt="Event Image" v-if="event.image_url" />
 		<div class="event-card-content">
-			<h3>{{ title }}</h3>
-			<p>{{ introduction }}</p>
+			<h3>{{ event.title }}</h3>
+			<p>{{ event.introduction }}</p>
 			<div class="event-time-info">
-				<p>Reserve by: {{ new Date(reserveDate).toLocaleDateString() }}</p>
+				<p>Reserve by: {{ new Date(event.start_time).toLocaleDateString() }}</p>
 			</div>
 		</div>
 	</div>
@@ -13,26 +13,10 @@
 
 <script setup>
 const props = defineProps({
-	id: {
-		type: [String, Number],
-		required: true
+	event: {
+		type: Object,
+		required: true,
 	},
-	title: {
-		type: String,
-		required: true
-	},
-	introduction: {
-		type: String,
-		default: ''
-	},
-	image: {
-		type: String,
-		default: ''
-	},
-	reserveDate: {
-		type: Number,
-		default: () => Date.now()
-	}
 });
 import { useRouter } from 'vue-router';
 const router = useRouter();

@@ -9,3 +9,16 @@ export const login = async address => {
   localStorage.setItem('token', token)
   return token
 }
+
+export const userInfo = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    throw new Error('No token found')
+  }
+  const res = await api.get('/user', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return res.data
+}

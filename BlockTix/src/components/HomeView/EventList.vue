@@ -9,11 +9,7 @@
 		<div class="event-list">
 			<EventCard v-for="event in events"
 				:key="event.id"
-				:id="event.id"
-				:title="event.name"
-				:introduction="event.introduction"
-				:image="event.image_url"
-				:reserveDate="start_time"
+				:event="event"
 			/>
 		</div>
 	</section>

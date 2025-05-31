@@ -46,30 +46,30 @@
 	</div>
 </template>
 
-<script>
-export default {
-	name: 'IdentityVerification',
-	data() {
-		return {
-			form: {
-				phoneNumber: '',
-				idType: '',
-				idNumber: '',
-			},
-		};
-	},
-	methods: {
-		handleSubmit() {
-			// Validate and emit form data
-			if (this.form.phoneNumber && this.form.idType && this.form.idNumber) {
-				this.$emit('submit', { ...this.form });
-			} else {
-				// Handle validation error (e.g., show error message)
-				console.log('Please fill in all fields');
-			}
-		},
-	},
-};
+<script setup>
+import { ref } from 'vue';
+import { register, login } from '@/api';
+import { useWallet } from '@/composables/useWallet';
+
+const emit = defineEmits(['close']);
+
+const { address } = useWallet();
+
+const form = ref({
+	phoneNumber: '',
+	idType: '',
+	idNumber: '',
+});
+
+function handleSubmit() {
+	register(address.value)
+		.then(async () => {
+			await login(address.value);
+			alert('Login successful!');
+			emit('close');
+		});
+}
+
 </script>
 
 <style scoped>

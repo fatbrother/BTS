@@ -4,7 +4,7 @@
 		<RouterView @open-popup="openPopup" />
 	</transition>
 	<div v-if="isPopupOpen" class="modal-overlay" @click.self="closePopup">
-		<IdentityVerification @submit="handleVerificationSubmit" @close="closePopup" />
+		<IdentityVerification @close="closePopup" />
 	</div>
 	<footer class="footer">
 		<p class="footer-text">© 2024 BlockTix. All rights reserved. Powered by Web3.</p>
@@ -30,15 +30,12 @@ function openPopup() {
 
 function closePopup() {
 	isPopupOpen.value = false;
-	// if (!isVerificationComplete) {
-	// 	disconnectWallet();
-	// }
-}
 
-function handleVerificationSubmit(formData) {
-	console.log('Verification data:', formData);
-	// Handle verification logic here (e.g., send to backend)
-	closePopup();
+
+	const token = localStorage.getItem('token');
+	if (!token) {
+		disconnectWallet();
+	}
 }
 </script>
 

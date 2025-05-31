@@ -25,19 +25,34 @@
 <script setup>
 import { useWallet } from '@/composables/useWallet'
 import { RouterLink } from 'vue-router'
+import { login } from '@/api'
+import { watch } from 'vue';
 
-const emit = defineEmits(['open-popup'])
+const emit = defineEmits(['open-popup']);
 
 const {
+    address,
     isConnected,
-    connectWallet
-} = useWallet()
+    connectWallet,
+} = useWallet();
 
-function onConnectButtonClick() {
-	connectWallet()
-
-	emit('open-popup')
+async function onConnectButtonClick() {
+    alert('Please connect your wallet to continue.');
+    connectWallet();
 }
+
+watch(address, async (newAddress) => {
+    if (!newAddress) {
+        return;
+    }
+
+    login(newAddress).then(() => {
+        // Do nothing on successful login
+    }).catch((error) => {
+        console.error('Login failed:', error);
+        emit('open-popup');
+    });
+});
 
 </script>
 

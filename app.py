@@ -73,12 +73,27 @@ def login():
     data = request.get_json()
     address = data.get('address')
     if not address:
+        print("Missing address in login request")
         return jsonify({'msg': 'Missing address'}), 400
     if not User.query.filter_by(address=address).first():
+        print(f"User with address {address} not found")
         return jsonify({'msg': 'User not identified'}), 404
     # Create JWT token
     token = create_access_token(identity=address)
     return jsonify({'access_token': token}), 200
+
+@app.route('/user', methods=['GET'])
+@jwt_required()
+def get_user():
+    identity = get_jwt_identity()
+    user = User.query.filter_by(address=identity).first()
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'address': user.address
+    }), 200
 
 # Helper: get current user model
 def get_current_user():
