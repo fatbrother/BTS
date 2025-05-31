@@ -1,18 +1,21 @@
 <template>
   <div class="hero">
-    <div class="hero-image" :style="{ backgroundImage: `url('${event.heroImage}')` }"></div>
+    <div class="hero-image" :style="{ backgroundImage: `url('${event.image_url}')` }"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h2 class="hero-title">{{ event.title }}</h2>
+      <h2 class="hero-title">{{ event.name }}</h2>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
     event: {
         type: Object,
-        required: true
+        default: () => ({
+            name: '',
+            image_url: ''
+        }),
     }
 })
 </script>

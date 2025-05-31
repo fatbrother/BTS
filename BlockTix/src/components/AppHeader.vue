@@ -9,16 +9,15 @@
             </div>
             <h1 class="brand-title">BlockTix</h1>
         </div>
-        <nav class="navigation">
-            <RouterLink to="/" class="nav-link">Home</RouterLink>
-            <RouterLink to="/events" class="nav-link">Discover Events</RouterLink>
-            <RouterLink to="/profile" class="nav-link">User Profile</RouterLink>
-        </nav>
         <div class="header-actions">
+            <nav class="navigation">
+                <RouterLink to="/" class="nav-link">Home</RouterLink>
+                <RouterLink to="/events" class="nav-link">Discover Events</RouterLink>
+            </nav>
             <button v-if="!isConnected" @click="onConnectButtonClick" class="connect-button">
                 Connect Wallet
             </button>
-            <div v-else class="user-avatar"></div>
+            <RouterLink v-else to="/profile" class="user-avatar" />
         </div>
     </header>
 </template>

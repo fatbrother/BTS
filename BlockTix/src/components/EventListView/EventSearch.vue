@@ -3,22 +3,37 @@
 		<label class="search-label">
 			<div class="search-input-wrapper">
 				<img class="search-icon" src="@/assets/icons/search.svg" alt="Search Icon" />
-				<input type="text" class="search-input" placeholder="Search events by name or keywords"
-					v-model="searchQuery" />
+				<input
+					type="text"
+					class="search-input"
+					placeholder="Search events by name or keywords"
+					:value="searchQuery"
+					@keyup="handleKeyUp"
+				/>
 			</div>
 		</label>
 	</div>
 </template>
 
-<script>
-export default {
-	name: 'EventSearch',
-	data() {
-		return {
-			searchQuery: '',
-		};
-	},
-};
+<script setup>
+import { defineProps, defineEmits } from 'vue';
+
+defineProps({
+	searchQuery: {
+		type: String,
+		default: ''
+	}
+});
+
+const emit = defineEmits(['update:searchQuery']);
+
+function handleKeyUp(event) {
+	if (event.key === 'Enter') {
+		emit('update:searchQuery', event.target.value);
+		event.target.blur();
+	}
+}
+
 </script>
 
 <style scoped>

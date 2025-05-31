@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from web3 import Web3
 import json
+from os import path
 
 app = Flask(__name__)
 CORS(app)
@@ -30,7 +30,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     address = db.Column(db.String(42), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,8 +37,10 @@ class Event(db.Model):
     start_time = db.Column(db.Integer, nullable=False)
     end_time = db.Column(db.Integer, nullable=False)
     total_tickets = db.Column(db.Integer, nullable=False)
+    introduction = db.Column(db.String(500), nullable=True)
+    image_url = db.Column(db.String(200), nullable=True)
+    location = db.Column(db.String(200), nullable=True)
     contract_address = db.Column(db.String(42), nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # Initialize DB
 def create_tables():
@@ -58,16 +59,11 @@ def hello():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    username = data.get('username')
     address = data.get('address')
-    password = data.get('password')
-    if User.query.filter_by(username=username).first():
-        return jsonify({'msg': 'Username already exists'}), 400
     if User.query.filter_by(address=address).first():
         return jsonify({'msg': 'Address already registered'}), 400
-    user = User(username=username,
-                address=address,
-                password_hash=generate_password_hash(password))
+    user = User(username='User_' + address[-4:],  # Simple username generation
+                address=address)
     db.session.add(user)
     db.session.commit()
     return jsonify({'msg': 'User registered'}), 201
@@ -75,27 +71,34 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    user = User.query.filter_by(username=username).first()
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({'msg': 'Bad username or password'}), 401
-    token = create_access_token(identity=username)
+    address = data.get('address')
+    if not address:
+        return jsonify({'msg': 'Missing address'}), 400
+    if not User.query.filter_by(address=address).first():
+        return jsonify({'msg': 'User not identified'}), 404
+    # Create JWT token
+    token = create_access_token(identity=address)
     return jsonify({'access_token': token}), 200
 
 # Helper: get current user model
 def get_current_user():
     identity = get_jwt_identity()
-    return User.query.filter_by(username=identity).first()
+    return User.query.filter_by(address=identity).first()
 
 # Deploy a new event
 # Client must sign the deployment transaction locally and send raw signed tx data
 @app.route('/holdEvent', methods=['POST'])
-@jwt_required()
 def hold_event():
-    user = get_current_user()
     data = request.get_json()
     signed_tx = data.get('signedTx')
+    name = data.get('eventName')
+    start_time = int(data.get('startTime'))
+    end_time = int(data.get('endTime'))
+    introduction = data.get('introduction', '')
+    image_url = data.get('image', '')
+    location = data.get('location', '')
+    total_tickets = int(data.get('totalTickets'))
+
     if not signed_tx:
         return jsonify({'msg': 'Missing signedTx'}), 400
     # Broadcast raw transaction
@@ -107,25 +110,21 @@ def hold_event():
     # Save event meta if deployment
     contract_address = receipt.contractAddress
     # To get constructor args, client should include event metadata
-    name = data.get('eventName')
-    start_time = int(data.get('startTime'))
-    end_time = int(data.get('endTime'))
-    total_tickets = int(data.get('totalTickets'))
     event = Event(name=name,
                   start_time=start_time,
                   end_time=end_time,
                   total_tickets=total_tickets,
-                  contract_address=contract_address,
-                  owner_id=user.id)
+                  introduction=introduction,
+                  image_url=image_url,
+                  location=location,
+                  contract_address=contract_address)
     db.session.add(event)
     db.session.commit()
     return jsonify({'contractAddress': contract_address}), 201
 
 # Get all events
 @app.route('/events', methods=['GET'])
-@jwt_required()
 def get_events():
-    user = get_current_user()
     events = Event.query.all()
     event_list = []
     for event in events:
@@ -135,16 +134,16 @@ def get_events():
             'start_time': event.start_time,
             'end_time': event.end_time,
             'total_tickets': event.total_tickets,
+            'introduction': event.introduction,
+            'image_url': event.image_url,
+            'location': event.location,
             'contract_address': event.contract_address,
-            'owner_id': event.owner_id
         })
     return jsonify(event_list), 200
 
 # Get event details
 @app.route('/event/<int:event_id>', methods=['GET'])
-@jwt_required()
 def get_event(event_id):
-    user = get_current_user()
     event = Event.query.get_or_404(event_id)
     event_details = {
         'id': event.id,
@@ -152,8 +151,10 @@ def get_event(event_id):
         'start_time': event.start_time,
         'end_time': event.end_time,
         'total_tickets': event.total_tickets,
+        'introduction': event.introduction,
+        'image_url': event.image_url,
+        'location': event.location,
         'contract_address': event.contract_address,
-        'owner_id': event.owner_id
     }
     return jsonify(event_details), 200
 
@@ -189,5 +190,13 @@ def check_result():
         return jsonify({'msg': f'Call failed: {str(e)}'}), 400
     return jsonify({'isWinner': is_winner}), 200
 
+def create_db(app):
+    with app.app_context():
+        db.create_all()
+        print("Database tables created successfully.")
+
+
 if __name__ == '__main__':
+    if not path.exists('instance/database.db'):
+        create_db(app)
     app.run(debug=True)

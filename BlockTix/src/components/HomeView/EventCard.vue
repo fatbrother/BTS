@@ -1,11 +1,11 @@
 <template>
 	<div class="event-card" @click="viewEvent">
-		<img src='@/assets/event1.png' alt="Event Image" />
+		<img :src="image" alt="Event Image" v-if="image" />
 		<div class="event-card-content">
 			<h3>{{ title }}</h3>
-			<p>Witness history in the making at the grand finals!</p>
+			<p>{{ introduction }}</p>
 			<div class="event-time-info">
-				<p>Reserve by: {{ reserveDate }}</p>
+				<p>Reserve by: {{ new Date(reserveDate).toLocaleDateString() }}</p>
 			</div>
 		</div>
 	</div>
@@ -21,13 +21,17 @@ const props = defineProps({
 		type: String,
 		required: true
 	},
+	introduction: {
+		type: String,
+		default: ''
+	},
 	image: {
 		type: String,
 		default: ''
 	},
 	reserveDate: {
-		type: String,
-		default: ''
+		type: Number,
+		default: () => Date.now()
 	}
 });
 import { useRouter } from 'vue-router';

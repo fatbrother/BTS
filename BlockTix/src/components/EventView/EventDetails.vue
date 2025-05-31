@@ -6,22 +6,23 @@
             <div class="detail-item">
                 <img class="detail-icon" src="@/assets/icons/calendar.svg" alt="Calendar Icon" height="24" width="24" />
                 <div class="detail-content">
-                    <p class="detail-label">Date</p>
-                    <p class="detail-value">{{ event.date }}</p>
+                    <p class="detail-label">Reserve Date</p>
+                    <p class="detail-value">{{ new Date(event.start_time).toLocaleString() + ' -'}}</p>
+                    <p class="detail-value">{{ new Date(event.end_time).toLocaleString() }}</p>
                 </div>
             </div>
             <div class="detail-item">
-                <img class="detail-icon" src="@/assets/icons/schedule.svg" alt="Schedule Icon" height="24" width="24" />
+                <img class="detail-icon" src="@/assets/icons/ticket.svg" alt="Ticket Icon" height="24" width="24" />
                 <div class="detail-content">
-                    <p class="detail-label">Time</p>
-                    <p class="detail-value">{{ event.time }}</p>
+                    <p class="detail-label">Total Tickets</p>
+                    <p class="detail-value">{{ event.total_tickets }}</p>
                 </div>
             </div>
             <div class="detail-item">
                 <img class="detail-icon" src="@/assets/icons/location.svg" alt="Location Icon" height="24" width="24" />
                 <div class="detail-content">
                     <p class="detail-label">Venue</p>
-                    <p class="detail-value">{{ event.venue }}</p>
+                    <p class="detail-value">{{ event.location }}</p>
                 </div>
             </div>
         </div>

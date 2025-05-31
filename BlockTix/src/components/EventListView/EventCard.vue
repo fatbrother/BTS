@@ -1,31 +1,24 @@
 <template>
   <div class="event-card">
     <div class="image-container">
-      <img :src="event.image" :alt="event.title" class="event-image" />
+      <img :src="event.image_url" :alt="event.name" class="event-image" />
       <button class="bookmark-button">
         <img src="@/assets/icons/bookmark.svg" alt="BookMark Icon" height="24" width="24" />
       </button>
     </div>
     <div class="event-details">
-      <p class="event-title">{{ event.title }}</p>
-      <p class="event-info">{{ event.date }} · {{ event.location }}</p>
+      <p class="event-title">{{ event.name }}</p>
+      <p class="event-info">{{ new Date(event.start_time).toLocaleString() }}</p>
+      <p class="event-info">{{ event.location }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   event: {
     type: Object,
     required: true,
-    validator: (event) => {
-      return (
-        'title' in event &&
-        'date' in event &&
-        'location' in event &&
-        'image' in event
-      );
-    },
   },
 });
 </script>

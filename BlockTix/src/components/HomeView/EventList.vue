@@ -2,15 +2,18 @@
 	<section class="events">
 		<div class="events-header">
 			<h1>Upcoming Events</h1>
-			<a href="#" class="view-all">View All</a>
+			<RouterLink to="/events" class="view-all">
+				View All
+			</RouterLink>
 		</div>
 		<div class="event-list">
 			<EventCard v-for="event in events"
 				:key="event.id"
 				:id="event.id"
-				:title="event.title"
-				:image="event.image"
-				:reserveDate="event.reserveDate"
+				:title="event.name"
+				:introduction="event.introduction"
+				:image="event.image_url"
+				:reserveDate="start_time"
 			/>
 		</div>
 	</section>
@@ -18,39 +21,22 @@
 
 <script setup>
 import EventCard from './EventCard.vue'
+import { ref, onMounted } from 'vue'
+import { getAllEvents } from '@/api'
 
-const events = [
-	{
-		id: 1,
-		title: 'Indie Rock Fest',
-		image: '@/assets/event1.png',
-		reserveDate: 'July 15th'
-	},
-	{
-		id: 2,
-		title: 'Summer Beats Festival',
-		image: '@/assets/event2.png',
-		reserveDate: 'August 1st'
-	},
-	{
-		id: 3,
-		title: "Broadway's Newest Hit",
-		image: '@/assets/event3.png',
-		reserveDate: 'September 10th'
-	},
-	{
-		id: 4,
-		title: 'Tech Innovations Expo',
-		image: '@/assets/event4.png',
-		reserveDate: 'October 5th'
-	},
-	{
-		id: 5,
-		title: 'Culinary Delights Gala',
-		image: '@/assets/event5.png',
-		reserveDate: 'November 20th'
+const events = ref([])
+async function fetchEvents() {
+	try {
+		const response = await getAllEvents();
+		events.value = response.data;
+	} catch (error) {
+		console.error('Error fetching events:', error);
 	}
-]
+}
+
+onMounted(() => {
+	fetchEvents();
+});
 </script>
 
 <style scoped>
